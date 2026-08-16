@@ -17,7 +17,7 @@ import { createHash } from 'node:crypto';
 const BASE = 'https://yce-api-01.makeupar.com';
 const DEMO = process.env.DEMO_MODE === '1' || !(process.env.YOUCAM_API_KEY || process.env.YOUCAM_API_KEYS);
 
-export const config = { runtime: 'nodejs22' };
+export const config = { runtime: 'nodejs' };
 
 // ---- CORS ----
 const HEADERS = {
