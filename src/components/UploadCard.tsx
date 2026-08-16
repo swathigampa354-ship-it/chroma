@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { useStore } from '../lib/store'
-import { analyze, prepareImage } from '../lib/api'
+import { analyze, prepareImage, demoAnalyze, DEMO_SELFIE } from '../lib/api'
 
 export function UploadCard() {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -29,6 +29,12 @@ export function UploadCard() {
     } finally {
       setAnalyzing(false)
     }
+  }
+
+  function handleDemo() {
+    setAnalyzingError(null)
+    setImage(DEMO_SELFIE)
+    setAnalysis(demoAnalyze(DEMO_SELFIE))
   }
 
   return (
@@ -67,7 +73,7 @@ export function UploadCard() {
       )}
       <button
         type="button"
-        onClick={() => handleFile(undefined)}
+        onClick={handleDemo}
         className="mt-3 text-xs text-muted underline"
       >
         or try the demo look

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useStore } from '../lib/store'
 import { tryOn, fetchTemplates, type TemplateItem } from '../lib/api'
 
@@ -11,6 +11,7 @@ const FEATURES = [
 
 export function StyleStudio() {
   const image = useStore((s) => s.image)
+  const analysis = useStore((s) => s.analysis)
   const [feature, setFeature] = useState('hair-bang')
   const [templates, setTemplates] = useState<TemplateItem[]>([])
   const [selected, setSelected] = useState<TemplateItem | null>(null)
@@ -19,10 +20,10 @@ export function StyleStudio() {
   const [rendering, setRendering] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const demo = useMemo(() => image && !image.startsWith('data:image'), [image])
+  const demo = analysis?.demo === true
 
   useEffect(() => {
-    if (!image) return
+    if (!image || demo) return
     let cancelled = false
     setLoadingTemplates(true)
     setSelected(null)
@@ -44,7 +45,7 @@ export function StyleStudio() {
         if (!cancelled) setLoadingTemplates(false)
       })
     return () => { cancelled = true }
-  }, [feature, image])
+  }, [feature, image, demo])
 
   useEffect(() => {
     if (!image || !selected || demo) return
@@ -82,17 +83,17 @@ export function StyleStudio() {
         ))}
       </div>
 
-      {loadingTemplates && (
+      {!demo && loadingTemplates && (
         <p className="text-sm text-muted">Loading styles…</p>
       )}
 
-      {!loadingTemplates && templates.length === 0 && (
+      {!demo && !loadingTemplates && templates.length === 0 && (
         <p className="text-sm text-amber-700">
           No {FEATURES.find((f) => f.key === feature)?.label.toLowerCase()} templates available.
         </p>
       )}
 
-      {templates.length > 0 && (
+      {!demo && templates.length > 0 && (
         <div className="mb-5 flex gap-2 overflow-x-auto pb-2">
           {templates.map((t) => (
             <button
@@ -136,8 +137,9 @@ export function StyleStudio() {
             </div>
           )}
           {demo && (
-            <div className="grid aspect-[4/3] w-full place-items-center rounded-xl border border-dashed border-black/10 bg-cream text-sm text-muted">
-              Style studio is live-only (uses YouCam templates)
+            <div className="grid aspect-[4/3] w-full place-items-center rounded-xl border border-dashed border-black/10 bg-cream p-4 text-center text-sm text-muted">
+              Style studio is live-only — it renders you with YouCam template
+              presets on the API-backed host (Vercel).
             </div>
           )}
           {error && (

@@ -21,6 +21,11 @@ export function TryOnStudio() {
 
   useEffect(() => {
     if (!color || !image || !analysis) return
+    if (analysis.demo) {
+      setTryingOn(false)
+      setTryOnResult(null, null)
+      return
+    }
     let cancelled = false
     setTryingOn(true)
     setTryOnResult(null, null)
@@ -48,7 +53,9 @@ export function TryOnStudio() {
       <h2 className="mb-1 text-lg font-bold">Try-on studio</h2>
       <p className="mb-5 text-sm text-muted">
         {color
-          ? `Rendering ${color.name} on your photo…`
+          ? analysis?.demo
+            ? `Showing ${color.name} on your photo (simulated)`
+            : `Rendering ${color.name} on your photo…`
           : 'Pick a color from your palette to see it on your own photo.'}
       </p>
 
@@ -74,7 +81,26 @@ export function TryOnStudio() {
               className="w-full rounded-xl border border-black/5 object-cover"
             />
           )}
-          {!tryingOn && !tryOnUrl && !tryOnError && (
+          {!tryingOn && color && analysis?.demo && (
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-black/5">
+              <img src={image} alt="Original selfie" className="absolute inset-0 h-full w-full object-cover" />
+              <div
+                className="absolute inset-x-0 top-0 h-[58%]"
+                style={{ backgroundColor: color.palette[0], mixBlendMode: 'multiply', opacity: 0.55 }}
+              />
+              <div
+                className="absolute inset-x-0 top-0 h-[58%]"
+                style={{
+                  background: `linear-gradient(180deg, ${color.palette[0]} 0%, ${color.palette[0]}00 100%)`,
+                  mixBlendMode: 'screen',
+                }}
+              />
+              <span className="absolute bottom-2 left-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] text-white">
+                Simulated preview
+              </span>
+            </div>
+          )}
+          {!tryingOn && !tryOnUrl && !tryOnError && !(color && analysis?.demo) && (
             <div className="grid aspect-[4/3] w-full place-items-center rounded-xl border border-dashed border-black/10 bg-cream text-sm text-muted">
               Select a color to begin
             </div>
