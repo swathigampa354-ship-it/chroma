@@ -1,121 +1,70 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useEffect } from 'react'
+import { useStore } from './lib/store'
+import { Hero } from './components/Hero'
+import { UploadCard } from './components/UploadCard'
+import { Palette } from './components/Palette'
+import { Profile } from './components/Profile'
+import { TryOnStudio } from './components/TryOnStudio'
+import { StyleStudio } from './components/StyleStudio'
+import { Recommendations } from './components/Recommendations'
+import { Preferences } from './components/Preferences'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const hydrate = useStore((s) => s.hydrate)
+  const hydrated = useStore((s) => s.hydrated)
+  const analysis = useStore((s) => s.analysis)
+  const image = useStore((s) => s.image)
+
+  useEffect(() => {
+    void hydrate()
+  }, [hydrate])
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="bg-grain min-h-screen">
+      <header className="mx-auto max-w-5xl px-4 pt-8 pb-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="grid h-9 w-9 place-items-center rounded-xl text-lg font-bold text-white chroma-gradient">
+              C
+            </span>
+            <span className="text-xl font-bold tracking-tight">CHROMA</span>
+          </div>
+          <span className="rounded-full border border-brand/30 bg-white px-3 py-1 text-xs font-medium text-brand-dark">
+            Hair Transformation Copilot
+          </span>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      </header>
 
-      <div className="ticks"></div>
+      <main className="mx-auto max-w-5xl space-y-10 px-4 pb-24">
+        <Hero />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        {!image && !hydrated && <div className="h-24" />}
+        {!image && hydrated && <UploadCard />}
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+        {image && !analysis && (
+          <div className="flex flex-col items-center gap-4 py-8">
+            <img src={image} alt="Your selfie" className="h-56 w-auto rounded-2xl object-cover shadow-lg" />
+            <p className="text-sm text-muted">Analysis in progress — reading your skin tone & hair profile…</p>
+          </div>
+        )}
+
+        {image && analysis && (
+          <>
+            <Profile />
+            <Palette />
+            <Preferences />
+            <Recommendations />
+            <TryOnStudio />
+            <StyleStudio />
+          </>
+        )}
+      </main>
+
+      <footer className="mx-auto max-w-5xl px-4 pb-10 text-center text-xs text-muted">
+        <p>CHROMA — built on the YouCam AI Beauty API for the YouCam AI Hackathon.</p>
+        <p className="mt-1">Try-on renders your own photo. Nothing is stored on our servers.</p>
+      </footer>
+    </div>
   )
 }
 
