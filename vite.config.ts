@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   base: process.env.VITE_BASE || '/',
   test: {
-    environment: 'jsdom',
+    environment: 'node',
     globals: true,
     exclude: [...configDefaults.exclude, 'node_modules'],
   },
